@@ -12,17 +12,17 @@ export default function Navbar() {
       </Link>
       <div className="flex items-center space-x-4">
         <Link href="/trade" passHref>
-          <Button variant="ghost" className={`text-white hover:text-violet-300 ${pathname === '/trade' ? 'bg-gray-800' : ''}`}>
+          <Button variant="ghost" className={`text-white hover:text-gray-600 ${pathname === '/trade' ? 'bg-gray-800' : ''}`}>
             Trade
           </Button>
         </Link>
         <Link href="/explore" passHref>
-          <Button variant="ghost" className={`text-white hover:text-violet-300 ${pathname === '/explore' ? 'bg-gray-800' : ''}`}>
+          <Button variant="ghost" className={`text-white hover:text-gray-600 ${pathname === '/explore' ? 'bg-gray-800' : ''}`}>
             Explore
           </Button>
         </Link>
         <Link href="/pools" passHref>
-          <Button variant="ghost" className={`text-white hover:text-violet-300 ${pathname === '/pools' ? 'bg-gray-800' : ''}`}>
+          <Button variant="ghost" className={`text-white hover:text-gray-600 ${pathname === '/pools' ? 'bg-gray-800' : ''}`}>
             Pools
           </Button>
         </Link>

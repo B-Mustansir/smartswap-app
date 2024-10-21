@@ -16,10 +16,10 @@ const Home: NextPage = () => {
           className="text-center"
         >
           <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">
-            Become an LP with confidence
+            AI-ML based AMM <br/> to protect your Liquidity 
           </h1>
           <p className="text-xl md:text-2xl text-gray-400 mb-8">
-            Buy, sell, and explore your favorite tokens.
+            Become an LP with confidence - Buy, sell, and explore your favorite tokens.
           </p>
           <Link href="/trade" passHref>
             <Button size="lg" className="bg-violet-500 hover:bg-violet-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out transform hover:scale-105">

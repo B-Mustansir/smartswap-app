@@ -28,7 +28,7 @@ const pools: Pool[] = [
     tvl: "$225.37m",
     volatility: "0.00% / 1.39% / 2.20%",
     fee: "↑ 24% 0.97%",
-    lastUpdate: "24/09/2023, 07:27:23"
+    lastUpdate: new Date(Date.now() - 10 * 1000).toLocaleString(),
   },
   // Add more pool data as needed
 ]
