@@ -1,184 +1,75 @@
-import { toEther, toWei, useAddress, useBalance, useContract, useContractRead, useContractWrite, useSDK, useTokenBalance } from "@thirdweb-dev/react";
-import styles from "../styles/Home.module.css";
-import { NextPage } from "next";
-import { useEffect, useState } from "react";
-import SwapInput from "../components/SwapInput";
+import React from 'react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Zap, Shield, TrendingUp } from 'lucide-react'
+import { Button } from "../components/ui/button"
+import Link from 'next/link'
+import { NextPage } from 'next'
 
 const Home: NextPage = () => {
-  // Contracts for the DEX and the token
-  const TOKEN_CONTRACT = "<YOUR_CONTRACT>";
-  const DEX_CONTRACT = "<YOUR_CONTRACT>";
-
-  // SDK instance
-  const sdk = useSDK();
-
-  // Get the address of the connected account
-  const address = useAddress();
-  // Get contract instance for the token and the DEX
-  const { contract: tokenContract } = useContract(TOKEN_CONTRACT);
-  const { contract: dexContract } = useContract(DEX_CONTRACT);
-  // Get token symbol and balance
-  const { data: symbol } = useContractRead(tokenContract, "symbol");
-  const { data: tokenBalance } = useTokenBalance(tokenContract, address);
-  // Get native balance and LP token balance
-  const { data: nativeBalance } = useBalance();
-  const { data: contractTokenBalance } = useTokenBalance(tokenContract, DEX_CONTRACT);
-
-  // State for the contract balance and the values to swap
-  const [contractBalance, setContractBalance] = useState<String>("0");
-  const [nativeValue, setNativeValue] = useState<String>("0");
-  const [tokenValue, setTokenValue] = useState<String>("0");
-  const [currentFrom, setCurrentFrom] = useState<String>("native");
-  const [isLoading, setIsLoading] = useState<Boolean>(false);
-
-  const { mutateAsync: swapNativeToken } = useContractWrite(
-    dexContract,
-    "swapEthTotoken"
-  );
-  const { mutateAsync: swapTokenToNative } = useContractWrite(
-    dexContract,
-    "swapTokenToEth"
-  );
-  const { mutateAsync: approveTokenSpending } = useContractWrite(
-    tokenContract,
-    "approve"
-  );
-
-  // Get the amount of tokens to get based on the value to swap
-  const { data: amountToGet } = useContractRead(
-    dexContract,
-    "getAmountOfTokens",
-    currentFrom === "native"
-      ? [
-          toWei(nativeValue as string || "0"),
-          toWei(contractBalance as string || "0"),
-          contractTokenBalance?.value,
-        ]
-      : [
-        toWei(tokenValue as string || "0"),
-        contractTokenBalance?.value,
-        toWei(contractBalance as string || "0"),
-      ]
-  );
-
-  // Fetch the contract balance
-  const fetchContractBalance = async () => {
-    try {
-      const balance = await sdk?.getBalance(DEX_CONTRACT);
-      setContractBalance(balance?.displayValue || "0");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Execute the swap
-  // This function will swap the token to native or the native to the token
-  const executeSwap = async () => {
-    setIsLoading(true);
-    try {
-      if(currentFrom === "native") {
-        await swapNativeToken({
-          overrides: {
-            value: toWei(nativeValue as string || "0"),
-          }
-        });
-        alert("Swap executed successfully");
-      } else {
-        await approveTokenSpending({
-          args: [
-            DEX_CONTRACT,
-            toWei(tokenValue as string || "0"),
-          ]
-        });
-        await swapTokenToNative({
-          args: [
-            toWei(tokenValue as string || "0")
-          ]
-        });
-        alert("Swap executed successfully");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("An error occurred while trying to execute the swap");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Fetch the contract balance and update it every 10 seconds
-  useEffect(() => {
-    fetchContractBalance();
-    setInterval(fetchContractBalance, 10000);
-  }, []);
-
-  // Update the amount to get based on the value
-  useEffect(() => {
-    if(!amountToGet) return;
-    if(currentFrom === "native") {
-      setTokenValue(toEther(amountToGet));
-    } else {
-      setNativeValue(toEther(amountToGet));
-    }
-  }, [amountToGet]);
-
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <div style={{
-          backgroundColor: "#111",
-          padding: "2rem",
-          borderRadius: "10px",
-          minWidth: "500px",
-        }}>
-          <div 
+    <div className="min-h-screen bg-gray-900 text-white overflow-hidden">
+      <div className="container mx-auto px-4 py-16 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center"
+        >
+          <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">
+            Become an LP with confidence
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-400 mb-8">
+            Buy, sell, and explore your favorite tokens.
+          </p>
+          <Link href="/trade" passHref>
+            <Button size="lg" className="bg-violet-500 hover:bg-violet-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out transform hover:scale-105">
+              Get started
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+        </motion.div>
+
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { icon: Zap, title: "Lightning Fast", description: "Execute trades with minimal latency" },
+            { icon: Shield, title: "Secure", description: "Your assets are protected by cutting-edge security" },
+            { icon: TrendingUp, title: "Grow Your Portfolio", description: "Access a wide range of DeFi opportunities" },
+          ].map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-all duration-300 border border-gray-700"
             >
-            <SwapInput
-              current={currentFrom as string}
-              type="native"
-              max={nativeBalance?.displayValue}
-              value={nativeValue as string}
-              setValue={setNativeValue}
-              tokenSymbol="ETH"
-              tokenBalance= {nativeBalance?.displayValue}
+              <feature.icon className="h-12 w-12 text-violet-400 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-gray-400">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-900 rounded-full filter blur-[120px] opacity-20 animate-pulse" />
+        
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-violet-400 rounded-full"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                width: `${Math.random() * 6 + 1}px`,
+                height: `${Math.random() * 6 + 1}px`,
+                opacity: Math.random() * 0.5 + 0.1,
+                animationDuration: `${Math.random() * 3 + 2}s`,
+                animationDelay: `${Math.random() * 2}s`,
+              }}
             />
-            <button
-              onClick={() => 
-                currentFrom === "native"
-                  ? setCurrentFrom("token")
-                  : setCurrentFrom("native")
-              }
-              className={styles.toggleButton}
-            >⇵</button>
-            <SwapInput
-              current={currentFrom as string}
-              type="token"
-              max={tokenBalance?.displayValue}
-              value={tokenValue as string}
-              setValue={setTokenValue}
-              tokenSymbol={symbol as string}
-              tokenBalance={tokenBalance?.displayValue}
-            />
-          </div>
-          {address ? (
-            <div style={{
-              textAlign: "center",
-            }}>
-              <button
-                onClick={executeSwap}
-                disabled={isLoading as boolean}
-                className={styles.swapButton}
-              >{
-                isLoading
-                  ? "Loading..."
-                  : "Swap"  
-              }</button>
-            </div>
-          ) : (
-            <p>Connect wallet to exchange.</p>
-          )}
+          ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
